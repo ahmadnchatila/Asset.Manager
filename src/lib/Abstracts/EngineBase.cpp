@@ -16,8 +16,8 @@ namespace fs = ghc::filesystem;
 
 EngineBase::EngineBase(IEngineHandler & handler, IDEConfigurationModel & ideConfigurationModel, bool ignore)
 : m_isRunnable(ignore ? false : ideConfigurationModel.getIsActive()),
-    m_handler(&handler),
-    m_ideConfigModel(&ideConfigurationModel)
+    m_ideConfigModel(&ideConfigurationModel),
+    m_handler(&handler)
 {
     // do nothing...
 }
@@ -291,7 +291,7 @@ EngineBase::updateContentInPbxprojFiles()
                     auto startIndex = line.find('=') + 1;
                     line = line.substr(0, startIndex);
                     
-                    line += " " + parseVariables(updateTarget->getValue());
+                    line += " " + parseVariables(updateTarget->getValue()) + ";";
                 }
                 
                 writer << line << "\n";
@@ -362,6 +362,59 @@ EngineBase::updateContentInPlistFiles()
             std::remove(filename.c_str());
             std::rename(newFilename.c_str(), filename.c_str());
         }
+    }
+}
+
+void 
+EngineBase::updateContentInRawFiles()
+{
+    auto rawFiles = m_ideConfigModel->getUpdateContentInFiles()->m_pRawFiles;
+    
+    assert( rawFiles != nullptr );
+    
+    for (auto rawFile : *rawFiles)
+    {
+        auto filename = parseVariables(rawFile->getFilename());
+        auto lineInt = rawFile->getLine();
+        auto posInt = rawFile->getPosition();
+        auto replace = rawFile->getReplace();
+        auto str = rawFile->getString();
+        
+        if (PathFileExists(filename.c_str()) == -1)
+        {
+            printf("The \"%s\" file cannot be located.\n", filename.c_str());
+            continue;
+        }
+        
+        auto newFilename = GetTempFilename(filename);
+        
+        string line;
+        
+        std::ifstream reader(filename);
+        std::ofstream writer(newFilename);
+        
+        int curr_line = 0;
+        
+        while(getline(reader, line))
+        {
+            if (curr_line != lineInt)
+            {
+                writer << line << "\n";
+                curr_line += 1;
+                continue;
+            }
+            
+          //  string f_half = line.substr(0, posInt);
+          //  string s_half = line.substr(posInt, line.length() - posInt);
+            
+            writer << str << "\n";
+        }
+        
+        writer.close();
+        reader.close();
+        
+        std::remove(filename.c_str());
+        std::rename(newFilename.c_str(), filename.c_str());
     }
 }
 
@@ -476,4 +529,5 @@ EngineBase::start()
     updateContentInPbxprojFiles();
     updateContentInPlistFiles();
     updateContentInGradleFiles();
+    updateContentInRawFiles();
 }

@@ -5,6 +5,7 @@
 #include "Models/UpdateContentInFilesModel.hpp"
 #include "Models/CopyFolderModel.hpp"
 #include "Models/CopyFileModel.hpp"
+#include "Models/RawFileModel.hpp"
 
 using Variables = std::map<string, string>;
 using CopyFoldersList = std::vector<CopyFolderModel*>;

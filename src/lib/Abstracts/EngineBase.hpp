@@ -19,6 +19,7 @@ public:
     void updateContentInPbxprojFiles();
     void updateContentInPlistFiles();
     void updateContentInGradleFiles();
+    void updateContentInRawFiles();
     
     void copyFiles();
     void copyFolders();

@@ -4,7 +4,7 @@
 AssetManagerProfileDeserializer::AssetManagerProfileDeserializer(string filename) :
 m_appSettingsModel(nullptr)
 {
-    filename = "/Users/ahamd.shatila/Downloads/Asset.Manager/AssetManagerProfile.ArabianShield.json";
+    filename = "/Users/ahamd.shatila/GitHub/Asset.Manager/samples/AssetManagerProfile.ArabianShield.json";
     std::ifstream i(filename);
     m_j = json::parse(i);
 }
@@ -26,6 +26,8 @@ AssetManagerProfileDeserializer::deserializeIDEConfiguration(string name, Variab
     auto pbxprojFilesObject = m_j[name][updateContentInFilesString]["PbxprojFiles"];
     auto plistFilesObject = m_j[name][updateContentInFilesString]["PlistFiles"];
     auto gradleFilesObject = m_j[name][updateContentInFilesString]["GradleFiles"];
+    auto rawFilesObject = m_j[name][updateContentInFilesString]["RawFiles"];
+
     auto copyFoldersObject = m_j[name][copyFoldersString];
     auto copyFilesObject = m_j[name][copyFilesString];
     
@@ -35,6 +37,7 @@ AssetManagerProfileDeserializer::deserializeIDEConfiguration(string name, Variab
     auto pGradleFileModelVc = new std::vector<GradleFileModel*>();
     auto pCopyFolderModelVc = new std::vector<CopyFolderModel*>();
     auto pCopyFilesModelVc = new std::vector<CopyFileModel*>();
+    auto pRawFilesModelVc = new std::vector<RawFileModel*>();
     
     // ==================================================================
     // XML Files
@@ -214,8 +217,30 @@ AssetManagerProfileDeserializer::deserializeIDEConfiguration(string name, Variab
         pGradleFileModelVc->push_back(gradleFileModel);
     }
     
-    auto updateContentInFilesModel =
-    new UpdateContentInFilesModel(pXmlFileModelVc, pPbxprojFileModelVc, pPlistFileModelVc, pGradleFileModelVc);
+    // ==================================================================
+    // Raw Files
+    // ==================================================================
+    
+    assert ( pRawFilesModelVc != nullptr );
+    
+    for (auto &rawFile : rawFilesObject)
+    {
+        string filename = rawFile["Filename"];
+        int line = rawFile["Line"];
+        int pos = rawFile["Position"];
+        bool replace = rawFile["Replace"];
+        string str = rawFile["String"];
+        
+        auto rawFileModel = new RawFileModel(filename, line, pos, replace, str);
+        
+        pRawFilesModelVc->push_back(rawFileModel);
+    }
+    
+    auto updateContentInFilesModel = new UpdateContentInFilesModel(pXmlFileModelVc,
+                                  pPbxprojFileModelVc,
+                                  pPlistFileModelVc,
+                                  pGradleFileModelVc,
+                                  pRawFilesModelVc);
     
     auto overrideVariables = new Variables();
     

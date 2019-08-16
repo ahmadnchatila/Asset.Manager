@@ -42,13 +42,7 @@ ArgParser::printHelp()
 
 void
 ArgParser::validate()
-{
-    if (m_args.size() == 0)
-    {
-        printUsage();
-        throw "No command-line arguments where specified.";
-    }
-    
+{    
     bool isHelpSpecified = isHelp();
     
     if (isHelpSpecified)

@@ -5,9 +5,9 @@
 #include <limits.h>
 
 AppBase::AppBase(int argc, const char* argv[]) :
-    m_argParser(new ArgParser(argc, argv)),
     m_appName(__AssetManager_AppName),
-    m_appVersion(__AssetManager_AppVersion)
+    m_appVersion(__AssetManager_AppVersion),
+    m_argParser(new ArgParser(argc, argv))
 {
     // Get the app path...
     char buf [PATH_MAX];
