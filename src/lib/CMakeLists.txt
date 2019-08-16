@@ -1,0 +1,5 @@
+add_subdirectory(Abstracts)
+add_subdirectory(Engine)
+add_subdirectory(Models)
+add_subdirectory(Utilities)
+add_subdirectory(Client)

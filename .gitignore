@@ -1,0 +1,6 @@
+/ext/rapidxml-1.13/*
+/ext/nlohmann/*
+/ext/ghc/*
+/samples/*
+/build
+.DS_STORE
